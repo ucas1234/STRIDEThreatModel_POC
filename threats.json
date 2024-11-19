@@ -1,0 +1,11 @@
+[
+    {
+        "threat_type": "Spoofing",
+        "description": "An attacker impersonates an admin user.",
+        "component": "User Authentication",
+        "severity": "High",
+        "likelihood": "Medium",
+        "impact": "High",
+        "mitigations": ["Multi-factor authentication", "IP whitelisting"]
+    }
+]
