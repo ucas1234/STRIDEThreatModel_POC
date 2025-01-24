@@ -1,11 +1,146 @@
 [
     {
-        "threat_type": "Spoofing",
+        "threat_category": "Spoofing",
         "description": "An attacker impersonates an admin user.",
         "component": "User Authentication",
-        "severity": "High",
         "likelihood": "Medium",
         "impact": "High",
-        "mitigations": ["Multi-factor authentication", "IP whitelisting"]
+        "mitigations": [
+            "Multi-factor authentication",
+            "IP whitelisting"
+        ]
+    },
+    {
+        "threat_category": "Tampering",
+        "description": "An attacker modifies data in transit or at rest.",
+        "component": "Data Integrity",
+        "likelihood": "High",
+        "impact": "High",
+        "mitigations": [
+            "Encryption",
+            "Data hashing",
+            "Integrity checks"
+        ]
+    },
+    {
+        "threat_category": "Repudiation",
+        "description": "An attacker denies their actions, making it difficult to track their behavior.",
+        "component": "Logging and Auditing",
+        "likelihood": "Medium",
+        "impact": "Medium",
+        "mitigations": [
+            "Comprehensive logging",
+            "Digital signatures",
+            "Non-repudiation"
+        ]
+    },
+    {
+        "threat_category": "Information Disclosure",
+        "description": "Sensitive data is exposed to unauthorized parties.",
+        "component": "Data Privacy",
+        "likelihood": "High",
+        "impact": "High",
+        "mitigations": [
+            "Data encryption",
+            "Access control",
+            "Data masking"
+        ]
+    },
+    {
+        "threat_category": "Denial of Service",
+        "description": "An attacker overwhelms a system, making it unavailable to users.",
+        "component": "Availability",
+        "likelihood": "High",
+        "impact": "High",
+        "mitigations": [
+            "Rate limiting",
+            "Load balancing",
+            "Traffic filtering"
+        ]
+    },
+    {
+        "threat_category": "Elevation of Privilege",
+        "description": "An attacker gains unauthorized access to higher levels of privilege.",
+        "component": "User Access Control",
+        "likelihood": "Medium",
+        "impact": "High",
+        "mitigations": [
+            "Role-based access control",
+            "Least privilege principle",
+            "Regular audits"
+        ]
+    },
+    {
+        "threat_category": "Spoofing",
+        "description": "An attacker impersonates a legitimate user to gain unauthorized access.",
+        "component": "User Authentication",
+        "likelihood": "Low",
+        "impact": "Medium",
+        "mitigations": [
+            "Biometric authentication",
+            "Public key infrastructure (PKI)"
+        ]
+    },
+    {
+        "threat_category": "Tampering",
+        "description": "An attacker manipulates the configuration files or system code.",
+        "component": "System Integrity",
+        "likelihood": "Medium",
+        "impact": "High",
+        "mitigations": [
+            "Code signing",
+            "Integrity checks",
+            "Secure software development lifecycle"
+        ]
+    },
+    {
+        "threat_category": "Repudiation",
+        "description": "A malicious user performs an action and then denies it, evading accountability.",
+        "component": "Security Logging",
+        "likelihood": "High",
+        "impact": "Medium",
+        "mitigations": [
+            "Secure logging with timestamps",
+            "Immutable logs",
+            "Audit trails"
+        ]
+    },
+    {
+        "threat_category": "Information Disclosure",
+        "description": "An attacker gains access to sensitive information, violating privacy requirements.",
+        "component": "Data Protection",
+        "likelihood": "Low",
+        "impact": "High",
+        "mitigations": [
+            "End-to-end encryption",
+            "Access control policies",
+            "Secure data storage"
+        ]
+    },
+    {
+        "threat_category": "Denial of Service",
+        "description": "An attacker floods the system with traffic, causing it to crash or become slow.",
+        "component": "System Availability",
+        "likelihood": "High",
+        "impact": "Medium",
+        "mitigations": [
+            "DDoS protection",
+            "Cloud scalability",
+            "Rate limiting"
+        ]
+    },
+    {
+        "threat_category": "Elevation of Privilege",
+        "description": "An attacker gains higher access privileges, leading to unauthorized system actions.",
+        "component": "Privilege Management",
+        "likelihood": "Medium",
+        "impact": "High",
+        "mitigations": [
+            "Regular privilege audits",
+            "Segregation of duties",
+            "Strict access control policies"
+        ]
     }
 ]
+
+    
