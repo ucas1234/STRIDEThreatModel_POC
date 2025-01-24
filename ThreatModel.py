@@ -1,4 +1,11 @@
 import json
+from enum import Enum
+
+# Define class and use Enum for the likelihood and impact
+class Severity(Enum):
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
 
 # Define class STRIDEThreatModel
 class STRIDEThreatModel:
@@ -8,26 +15,27 @@ class STRIDEThreatModel:
     def __init__(self):
 
         # Create threats dictionary as an object of class using the 6 STRIDE categories
-        self.threatCategories = {
-            'Spoofing': [],
-            'Tampering': [],
-            'Repudiation': [],
-            'Information Disclosure': [],
-            'Denial of Service': [],
-            'Elevation of Privilege': [],
-        }
+        self.threatCategories = {'Spoofing': [], 'Tampering': [], 'Repudiation': [], 'Information Disclosure': [], 'Denial of Service': [], 'Elevation of Privilege': []}
+
+    # Create function that validates imputs
+    def get_valid_input(self, prompt, valid_range):
+        while True:
+            try:
+                # Convert users input into a integer
+                choice = (int(input(prompt)))
+                if choice not in valid_range:
+                    print(f"Please enter a number between {valid_range.start} and {valid_range.stop - 1 }.")
+                else:
+                    return choice
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+
     
     # Create function which will add the details of each threat to the threat category and append risk score
     def add_threat(self, threat_category, description, component, likelihood, impact, mitigations):
         # Loop to check if the threat type that has been specified exists in the threats dictionary and create new threat object with all the attributes we need.
         if threat_category in self.threatCategories:
-            threat = {
-                'description': description,
-                'component': component,
-                'likelihood': likelihood,
-                'impact': impact,
-                'mitigations': mitigations
-            }
+            threat = {'threat_category': threat_category,'description': description, 'component': component,'likelihood': likelihood, 'impact': impact, 'mitigations': mitigations}
             # Use calculate_risk_score score function to calculate risk score using likelihood * impact
             risk_score = self.calculate_risk_score(likelihood, impact)
             # Add this risk score to our threat object as  new string attribute and append to list of threats associated with the specified threat_category
@@ -35,21 +43,16 @@ class STRIDEThreatModel:
             self.threatCategories[threat_category].append(threat)
         # Handle error if the specified threat_category is not in the 6 STRIDE threat categories dictionary.
         else:
-            print("This is not a valid threat type. Please choose a valid threat category from the STRIDE model")
+            print(f"This is not a valid threat category {threat_category}. Please choose a valid threat category from the STRIDE model")
 
 
     # Create function to calculate the risk score
     def calculate_risk_score(self, likelihood, impact):
-
-        # Define the likelihood and impact disctionaries, assigning numeric inputs to strings
-        likelihood_map = {'Low': 1, 'Medium': 2, 'High': 3}
-        impact_map = {'Low': 1, 'Medium': 2, 'High': 3}
-
-        #Use .get() function to search forvalue assicated with key in dictionary, return 0 if doesn't exist
-        return likelihood_map.get(likelihood, 0) * impact_map.get(impact, 0)
+        
+        return likelihood.value * impact.value
     
 
-    # Create functyion to display the list of "threat_category"'s from our self.threatCategories dictionary
+    # Create function to display the list of "threat_category"'s from our self.threatCategories dictionary
     def display_threat_categorys(self):
         print("\nSelect a threat category from the list:")
 
@@ -61,7 +64,7 @@ class STRIDEThreatModel:
 
         # Use index variable to loop to iterate over the threat_category in the threat_categorys list, incrementing 
         # value until end of list
-        for index, threat_category in enumerate(threat_categorys, start = 1):
+        for index, threat_category in enumerate(self.threatCategories.keys(), start = 1):
 
             # Print the index number to screen followed by threat type for each threat type from self.threatCategories dictionary
             # Use .f to conver the variable vlaues into a string
@@ -69,7 +72,7 @@ class STRIDEThreatModel:
 
             # Return threat_thyes to be used in other functions
     
-        return threat_categorys
+        return list(self.threatCategories.keys())
 
         
 
@@ -99,8 +102,8 @@ class STRIDEThreatModel:
         print(f"Type: {selected_threat['threat_category']}")
         print(f"Description: {selected_threat['description']}")
         print(f"Component: {selected_threat['component']}")
-        print(f"Likelihood: {selected_threat['likelihood']}")
-        print(f"Impact: {selected_threat['impact']}")
+        print(f"Likelihood: {selected_threat['likelihood'].name}") # We use .name to get just the name of the enum without Severity. before it 
+        print(f"Impact: {selected_threat['impact'].name}") # We use .name to get just the name of the enum without Severity. before it 
         print(f"Risk Score: {selected_threat['risk_score']}")
         # Final print is a list of multiple mitigations. Use the .join() function to concatinate comma seperated strings
         print(f"Mitigations: {', '.join(selected_threat['mitigations'])}")
@@ -120,7 +123,20 @@ class STRIDEThreatModel:
                     likelihood = threat['likelihood']
                     impact = threat['impact']
                     mitigations = threat['mitigations']
-                    self.add_threat(threat_category, description, component, likelihood, impact, mitigations)
+
+                    #  Convert likelihood and impact to Severity enum
+
+                    try:
+                        likelihoodEnum = Severity[likelihood.upper()] # Convert our likelihood string from json into Severity Enum
+                        impactEnum = Severity[impact.upper()] # Convert our impact string from JSON into Severity Enum
+                    
+                    except KeyError:
+                        print(f"Error: Invalid likelihood or impact value '{likelihood}' or '{impact}' for threat: {threat}")
+                        continue
+                    if threat_category and description and component:
+                        self.add_threat(threat_category, description, component, likelihoodEnum, impactEnum, mitigations)
+                    else:
+                        print(f"Missing data for threst: {threat}")
         except FileNotFoundError:
             print(f"Error: The file {json_file}  was not found.")
         except json.JSONDecodeError:
@@ -128,60 +144,27 @@ class STRIDEThreatModel:
 
     # Create a function that allows the user to choose a threat category and view individual threats in that category
     def interactive_menu(self):
-
-        # Infinite loop which continuously shows the user menu options every time the loop runs
         while True:
             print("\nPlease choose an option:")
             print("1. View Threat Categories")
             print("2. Exit")
-
             choice = input("Enter choice (1-2): ")
-
+            # If the user chooses option 1 (View Threat Categories), show available threat categories.
             if choice == '1':
-
-                # Get the list of threat types with our display_threat_categorys() function and set equal to threat_categorys variable
-                threat_categorys = self.display_threat_categorys()
-
-                # Handle errors with try except block
-                try:
-
-                    threat_category_choice = int(input(f"Select a threat category (1-{len(threat_categorys)}): ")) - 1 # -1 adjusts the selection value as list indiced in Py start at 0
-
-                    if 0 <=threat_category_choice < len(threat_categorys):
-
-                        # From threat_categorys list retrieve the specific thrat category choice by the number user input
-                        selected_threat_category = threat_categorys[threat_category_choice]
-
-                        # Call our display_individual_threats() functio, passing in our selected_threat_category to return a list of threats associated with this category
-                        threats = self.display_individual_threats(selected_threat_category)
-
-                        if threats: # Check there are any threats in list
-
-                            # Handle errors with try excepclet block 
-                            try:
-                                threat_choice = int(input(f"Select a threat (1-{len(threats)}): ")) - 1
-                                if 0 <= threat_choice < len(threats):
-                                    
-                                    # From the list of individual threats retrieve specific number that was input by the user as the threat choice
-                                    selected_threat = threats[threat_choice]
-
-                                    # Create new key value pair within our selected_threat object
-                                    selected_threat['threat_category'] = selected_threat_category
-
-                                    # Call our view_threat_details function and pass in the selected_threat
-                                    self.view_threat_details(selected_threat)
-                                
-                                else:
-                                    print("Invalid choice. Returning to threat categories.")
-                            
-                            # Use ValueError py function to catch exception if anythin other then an integer is input
-                            except ValueError:
-                                print("Invalid input. Please enter a number.")
-                        else:
-                            print("Invalid choice. Returning to main menu.")
-                except ValueError:
-                    print("Invalid input. Please enter a number")
-            
+                threat_categories = self.display_threat_categorys()
+                # Use out get_valid_input function to ensure that the input is between 1 and lenght of our threat category list
+                selected_category_index = self.get_valid_input(f"Select a threat category (1-{len(threat_categories)}): ", range(1, len(threat_categories) + 1)) - 1
+                # Retrieve the selected category from the threat_categories list using the index selected
+                selected_category = threat_categories[selected_category_index]
+                # Display list of individual threats in the category selected
+                threats = self.display_individual_threats(selected_category)
+                if threats:
+                    # If there are threats in that category use input validation again with indexing for list of individual threats 
+                    selected_threat_index = self.get_valid_input(f"Select a threat (1-{len(threats)}): ", range(1, len(threats) + 1)) - 1
+                    # Retrieve selected individual threat threats list using the index selected
+                    selected_threat = threats[selected_threat_index]
+                    # Display all of the details of the individual threat
+                    self.view_threat_details(selected_threat)
             elif choice == '2':
                 print("Exiting...")
                 break
@@ -189,16 +172,19 @@ class STRIDEThreatModel:
                 print("Invalid option. Please choose again.")
 
 
-# Main program is below
-# Use the python __name__ variable which automatically assigned a value depending on how file is used
-if __name__ == "__main__":
+# ---------------- Main program below -----------------------
 
-    # Create a new object which is part of the STRIDEThreatModel() class
+
+# Checks if the script is being run directly (as opposed to being imported as a module). If it is being run directly, the following code is executed.
+if __name__ == "__main__":
+    
+    # Create a new object from the class StrideThreatModel() called threat_model
     threat_model = STRIDEThreatModel()
 
-    # Call out load json function and append to our newly created threat_model object
+    # Next load our thrEATS FROM json into the threat_model object
     threat_model.load_threats_from_json('threats.json')
 
+    # Start up user interactive menu
     threat_model.interactive_menu()
 
 
